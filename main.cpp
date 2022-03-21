@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdlib>
 #include <limits>
+
 //#include "./classes/BandWidthTreeMethods.cpp"
 
 using namespace std;
@@ -33,90 +34,32 @@ int amb(Node *v){ // sum of band from v to root node
     return amb_;
 };
 
-int MinBW_(Node * n,int s_i,int e_i,int it){ // find minimum bandwidth on the interval [s_i,e_i)
+
+int MinBW(Node * n,int s_i,int e_i){ // find minimum bandwidth on the interval [s_i,e_i)
     
-    it++;
-    
-    if(!(n->getStart() <= s_i) || !(n->getEnd() >= e_i)){ // GUARDARE DELL INTERVALLO NON COMPLETO [)
-        cout << "here 0" << endl;
+    if(s_i > e_i){
+        cout << "s_i > e_i" << endl;
         return 0;
-    };
-
-
-    int minBW = numeric_limits<int>::max(); // not really infinite but 2^31-1
-    bool is_leaf = (n->getC1() == nullptr) && (n->getC2() == nullptr) && (n->getC3() == nullptr); // cambiare questo usando getChild().size()
-    
-    if(((n->getStart() == s_i) && (n->getEnd() == e_i)) || is_leaf){ // GUARDARE DELL INTERVALLO NON COMPLETO [)
-        cout << "iteration " << it << " here leaf or complete, value : " << amb(n) <<  endl;
-        return n->getBand();
-    };
-    
-    vector<Node *> v = {n->getC1(),n->getC2(),n->getC3()};
-    cout << "iteration " << it << " looking into childs : " << endl;
-
-    for(auto & child : v)
-    {
-        if(child != nullptr){
-        
-
-        bool contained = (s_i <= child->getStart() && child->getStart() < e_i) ||
-                         ((child->getStart() <= s_i && s_i <=  child->getEnd()) && (child->getStart() <= e_i && e_i <=  child->getEnd()) )
-                         || (s_i < child->getEnd() && child->getEnd() <= e_i); // [c,d) int [l(u),r(u))
-        
-        
-        if(contained){
-            int s = max(child->getStart(),s_i);
-            int e = min(child->getEnd(),e_i);
-
-            cout << "iteration " << it <<" s,e = " << s << "," << e << endl;
-
-            int value = MinBW_(child,s,e,it);
-
-            cout << "iteration " << it << " value : " << value << " for " << child->getStart() << "," << child->getEnd() << endl;
-
-
-            if(minBW > value){
-                cout << "iteration " << it << " new minBW " << value << " old one " << minBW << endl;
-                minBW = value;
-            }
-        } else{
-
-                cout << "iteration " << it << " not contained : " << child->getStart() << "," << child->getEnd() << endl;
-            }
-        }
-       
-    }/*
-    if(n->getP() == nullptr){
-        return amb(n) + minBW;    
     }
-    */
-    //return minBW;
 
-    cout << "iteration " << it << " final minBW " << minBW  <<  endl;
-    return n->getBand() + minBW;
-
-};
-
-int MinBW(Node * n,int s_i,int e_i,int it){ // find minimum bandwidth on the interval [s_i,e_i)
-    
-    it++;
+    //it++;
     
     if(!(n->getStart() <= s_i) || !(n->getEnd() >= e_i)){ // GUARDARE DELL INTERVALLO NON COMPLETO [)
-        cout << "here 0" << endl;
+        //cout << "Not contained" << endl;
         return 0;
     };
 
 
     int minBW = numeric_limits<int>::max(); // not really infinite but 2^31-1
-    bool is_leaf = (n->getC1() == nullptr) && (n->getC2() == nullptr) && (n->getC3() == nullptr); // cambiare questo usando getChild().size()
+    bool is_leaf = (n->getC1() == nullptr) && (n->getC2() == nullptr) && (n->getC3() == nullptr); // getChild().size()
     
-    if(((n->getStart() == s_i) && (n->getEnd() == e_i)) || is_leaf){ // GUARDARE DELL INTERVALLO NON COMPLETO [)
-        cout << "iteration " << it << " here leaf or complete, value : " << amb(n) <<  endl;
+    if(((n->getStart() == s_i) && (n->getEnd() == e_i)) || is_leaf){ //  [)
+        //cout << "iteration " << it << " here leaf or complete, value : " << amb(n) <<  endl;
         return amb(n);
     };
     
     vector<Node *> v = {n->getC1(),n->getC2(),n->getC3()};
-    cout << "iteration " << it << " looking into childs : " << endl;
+    //cout << "iteration " << it << " looking into childs : " << endl;
 
     for(auto & child : v)
     {
@@ -132,32 +75,26 @@ int MinBW(Node * n,int s_i,int e_i,int it){ // find minimum bandwidth on the int
             int s = max(child->getStart(),s_i);
             int e = min(child->getEnd(),e_i);
 
-            cout << "iteration " << it <<" s,e = " << s << "," << e << endl;
+            //cout << "iteration " << it <<" s,e = " << s << "," << e << endl;
 
-            int value = MinBW(child,s,e,it);
+            int value = MinBW(child,s,e);
 
-            cout << "iteration " << it << " value : " << value << " for " << child->getStart() << "," << child->getEnd() << endl;
+            //cout << "iteration " << it << " value : " << value << " for " << child->getStart() << "," << child->getEnd() << endl;
 
 
             if(minBW > value){
-                cout << "iteration " << it << " new minBW " << value << " old one " << minBW << endl;
+                //cout << "iteration " << it << " new minBW " << value << " old one " << minBW << endl;
                 minBW = value;
             }
         } else{
 
-                cout << "iteration " << it << " not contained : " << child->getStart() << "," << child->getEnd() << endl;
+                //cout << "iteration " << it << " not contained : " << child->getStart() << "," << child->getEnd() << endl;
             }
         }
        
-    }/*
-    if(n->getP() == nullptr){
-        return amb(n) + minBW;    
     }
-    */
-    //return minBW;
-
-    cout << "iteration " << it << " final minBW " << minBW  <<  endl;
-    return amb(n) + minBW;
+    //cout << "iteration " << it << " final minBW " << minBW  <<  endl;
+    return minBW;
 
 };
 
@@ -168,8 +105,7 @@ int main(int argc, char * argv[]){
         exit(1);
     }
 
-    // long because pointer is 32b and long same, long -> implicit conversion
-
+    
     char * node = argv[1];
     int s = atoi(argv[2]);
     int e = atoi(argv[3]);
@@ -204,10 +140,19 @@ int main(int argc, char * argv[]){
     C.setC1(&G);
     C.setC3(&H);
 
+    G.setP(&C);
+    H.setP(&C);
 
-    int val = MinBW_(&A,s,e,0);
+    
+    
 
-    cout << "it works ? " << val << endl;
+    for (auto i = 1; i < 60; i = i + 1){
+        for (auto j = i + 5; j < 65; j =  j + 5){
+            cout << "t(" << i << "," << j << ") - > " << MinBW(&D,i,j) << endl;
+        }        
+    }
+    
+    
 
     return 0;
 };
