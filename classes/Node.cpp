@@ -1,7 +1,4 @@
-
 #include "Node.h"
-#include <vector>
-
 Node::Node(){};
 
 Node::Node(int b, int s, int e){
@@ -16,6 +13,10 @@ void Node::setBand(int b){
 
 void Node::setStart(int s){
     start = s;
+};
+
+void Node::setAMB(int a){
+    amb = a;
 };
 
 void Node::setEnd(int e){
