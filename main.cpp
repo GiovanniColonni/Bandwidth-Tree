@@ -142,7 +142,71 @@ Node * imm_left(Node *  v){
     }
     return nullptr;
 }
-/*
+
+int processLeaf(Node * v1,int w,int s_i,int e_i){
+
+        if(v1->getStart() == s_i && v1->getEnd() == e_i){ 
+            // entire node so no extra childs needed
+            // decrement bandwidth
+            v1->setAMB(v1->getAMB() - w);
+            return 0; 
+        } 
+
+        auto n_amb = (v1->getAMB() -w);
+        auto amb = v1->getAMB();
+
+        if(v1->getStart() == s_i && v1->getEnd() > e_i){
+            // l
+            cout << "should be here" << endl;
+            Node * C1 = new Node(0,s_i,e_i);
+            C1->setAMB(n_amb);
+            v1->setC1(C1);
+            
+            // r
+            Node * C3 = new Node(0,e_i,v1->getEnd());
+            C3->setAMB(amb);
+            v1->setC3(C3);
+             // same bw
+            // sub root
+            v1->setAMB(n_amb);
+            return 0;
+        }
+        if(v1->getStart() < s_i && v1->getEnd() == e_i){
+            cout << "not here" << endl;
+            // l
+            Node * C1 = new Node(0,v1->getStart(),s_i);
+            v1->setC1(C1);
+            C1->setAMB(amb);
+            // r
+            Node * C3 = new Node(0,s_i,v1->getEnd());
+            v1->setC3(C3);
+            C3->setAMB(n_amb); // same bw
+            // sub root
+            v1->setAMB(n_amb); 
+            return 0;
+        }
+        cout << "not here" << endl;
+        // split 3 child 
+        Node * C1 = new Node(0,v1->getStart(),s_i);
+        Node * C2 = new Node(0,s_i,e_i);
+        Node * C3 = new Node(0,e_i,v1->getEnd());
+
+
+        C1->setAMB(amb);
+        C2->setAMB(n_amb);
+        C3->setAMB(amb);
+
+        v1->setC1(C1);
+        v1->setC2(C2);
+        v1->setC3(C3);
+        
+       
+        v1->setAMB(n_amb); 
+        
+        return 0;
+        //------------------------
+}
+
 int split(Node * v1,Node * v2,Node * v3,int count, int w, int s_i,int e_i){ // forse devo ritornare il valore di count
     int rv1 = v1->getEnd();
     int lv1 = v1->getStart();
@@ -154,56 +218,21 @@ int split(Node * v1,Node * v2,Node * v3,int count, int w, int s_i,int e_i){ // f
     if(!contained){
         return -1;
     }
+    
+    bool is_leaf = (v1->getC1() == nullptr) && (v1->getC2() == nullptr) && (v1->getC3() == nullptr); // getChild().size()
+    
+    
+    if(is_leaf){
+        // process child
+        return processLeaf(v1,w,s_i,e_i);
+    }
+    // IT WAS BEFORE THE lEAF BUT I THINK THAT IS AN ERROR ! (tests are with me)
     if(v1->getStart() >= s_i && v1->getEnd() >= e_i){
+        cout << "here ?" << endl;
         v1->setAMB(v1->getAMB() - w);
         return 1; // counter = 1 
     }
-    bool is_leaf = (v1->getC1() == nullptr) && (v1->getC2() == nullptr) && (v1->getC3() == nullptr); // getChild().size()
-    if(is_leaf){
-        // process child
-        if(v1->getStart() == s_i && v1->getEnd() == e_i){ 
-            // entire node so no extra childs needed
-            // decrement bandwidth
-            v1->setAMB(v1->getAMB() - w);
-            return 0; 
-        } 
-        
-        auto n_amb = (v1->getAMB() -w);
-        //split 2 child
-
-        if(v1->getStart() == s_i && v1->getEnd() > e_i){
-            // l
-            v1->setC1(&Node(0,s_i,e_i));
-            v1->getC1()->setAMB(n_amb);
-            // r
-            v1->setC3(&Node(0,e_i,v1->getEnd()));
-            v1->getC3()->setAMB(v1->getAMB()); // same bw
-            // sub root
-            v1->setAMB(n_amb);
-        }
-        if(v1->getStart() < s_i && v1->getEnd() == e_i){
-            // l
-            v1->setC1(&Node(0,v1->getStart(),s_i));
-            v1->getC1()->setAMB(v1->getAMB());
-            // r
-            v1->setC3(&Node(0,s_i,v1->getEnd()));
-            v1->getC3()->setAMB(n_amb); // same bw
-            // sub root
-            v1->setAMB(n_amb); 
-        }
-
-        // split 3 child 
-        v1->setC1(&Node(0,v1->getStart(),s_i));
-        v1->getC1()->setAMB(v1->getAMB());
-        v1->setC2(&Node(0,s_i,e_i));
-        v1->getC2()->setAMB(n_amb);
-        v1->setC3(&Node(0,e_i,v1->getEnd()));
-        v1->getC3()->setAMB(v1->getAMB());
-
-        v1->setAMB(n_amb); 
-
-        return 0;
-    }
+    cout << "Not implemented yet" << endl;
     return 0;
 }
 
@@ -220,14 +249,14 @@ Node * AllocateBW(Node * u,int w,int s_i,int e_i){
         cout << "Not enough bandwidth available in " << s_i << "," << e_i << endl;
         return nullptr;
     };
-    split(u,nullptr,nullptr,0,w,s_i,e_i);
-
+    auto a  = split(u,nullptr,nullptr,0,w,s_i,e_i);
+    cout << a << endl;
     return u;
 };
-*/
+
 void printNodes(ofstream &file,Node * n){
-    // ADD [c,d] and AMB! 
-    file << n << "," << n->getC1() << "," << n->getC2() << "," << n->getC3() << endl;
+    
+    file << "(" << n << ";" << n->getStart() << ";" << n->getEnd() << ";"<< n->getAMB() <<")," << n->getC1() << "," << n->getC2() << "," << n->getC3() << endl;
     if(n->getC1() != nullptr){
         printNodes(file,n->getC1());
     }
@@ -304,15 +333,9 @@ int main(int argc, char * argv[]){
     G.setAMB(amb(&G));
     H.setAMB(amb(&H));
     
+    Node * a = AllocateBW(&D,5,3,9);
     
-    /*
-    for (auto i = 1; i < 60; i = i + 1){
-        for (auto j = i + 5; j < 65; j =  j + 5){
-            cout << "t(" << i << "," << j << ") - > " << MinBW(&D,i,j) << endl;
-        }        
-    }
-    */
     printTree(&A);
     
-    return 0;
+    exit(0);
 };

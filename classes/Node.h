@@ -17,6 +17,7 @@ private:
 public:
     Node();
     Node(int band, int start, int end);
+    ~Node();
 
     void setBand(int band);
     void setStart(int start);
@@ -47,7 +48,7 @@ public:
 
         return count;
     }
-
+    void toString();
 
     Node * getP(){return p;}
     Node * getC1(){return c1;}

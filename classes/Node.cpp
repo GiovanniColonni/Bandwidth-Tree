@@ -1,6 +1,8 @@
 #include "Node.h"
-Node::Node(){};
+#include <iostream>
 
+Node::Node(){};
+Node::~Node(){};
 Node::Node(int b, int s, int e){
     band = b;
     start = s;
@@ -39,8 +41,11 @@ void Node::setC3(Node *n){
     c3 = n;
 };
 
-  
+void Node::toString(){
+    std::cout << "s : " << getStart() << " e : " << getEnd() << " amb : " << getAMB() << std::endl;
+    std::cout << "n childs : " << getNChild() << std::endl;
 
+};
 
 
 
