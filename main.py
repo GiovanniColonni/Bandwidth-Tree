@@ -1,8 +1,8 @@
-from sys import stdin
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
 from subprocess import Popen, PIPE
+from sys import argv
 
 def hierarchy_pos(G, root=None, width=3., vert_gap = 0.3, vert_loc = 0, xcenter = 0.5):
 
@@ -101,20 +101,29 @@ def printTree():
     nx.draw(tree_g,labels=labeldict,with_labels=True,pos=pos)
     plt.show()
 
-def test_that():
+def test_that(w,c,d):
     # compile
-    p = Popen("g++ main.cpp classes/Node.cpp -o bandwidth",shell=True)
+    p = Popen("g++ main.cpp classes/Node.cpp -o bandwidth",shell=True,stdout=PIPE)
     ret = p.wait()
     if(ret != 0):
         print("compilation errors..exit")
         exit(0)
 
-    p = Popen("./bandwidth A 1 1",shell=True,stdin = PIPE)
+    p = Popen(f"./bandwidth {w} {c} {d}",shell=True,stdout = PIPE)
+    for line in p.stdout.readlines():
+        print(line.decode("utf-8"))
+
     ret = p.wait()
     return ret
 
 if __name__ == "__main__":
-    ret = test_that()
+    w = argv[1]
+    c = argv[2]
+    d = argv[3]
+
+    ret = test_that(w,c,d)
+  
+
     if(ret == 0):
         printTree()
     else:

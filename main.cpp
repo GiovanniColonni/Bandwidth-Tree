@@ -107,57 +107,41 @@ void balance(Node * n){
     return;
 }
 
+void decrement_bandwidth(Node * n,int w,int c,int d){
 
-int which_child(Node * v){
-    auto vp = v->getP();
-     if(vp->getC1() == v){ 
-        return 1; // rigth child
-    }
-    if(vp->getC2() == v){
-        return 2; // center child
-    }
-    if(vp->getC3() == v){
-        return 3; // right child
-    }
-    return 0;
-}
-Node * imm_right(Node *  v){
-    auto p = v->getP();
-    if(p->getC2()!= nullptr && p->getC2() != v){
-        return p->getC2();
-    }
-    if(p->getC3()!= nullptr && p->getC3() != v){
-        return p->getC2();
-    }
-    return nullptr;
+    if(n->getStart() == c && n->getEnd() == d){ // entire interval
+        n->setAMB(n->getAMB() - w);
+        // decrement also the childs
+        if(n->isLeaf()){
+            return;
+        }
+        auto childs = n->getChilds();
+        for(auto v:childs){
+            decrement_bandwidth(v,w,v->getStart(),v->getEnd());
+        };
+        return;
 }
 
-Node * imm_left(Node *  v){
-    auto p = v->getP();
-    if(p->getC2()!= nullptr && p->getC2() != v){
-        return p->getC2();
-    }
-    if(p->getC1()!= nullptr && p->getC1() != v){
-        return p->getC2();
-    }
-    return nullptr;
 }
 
 int processLeaf(Node * v1,int w,int s_i,int e_i){
-
-        if(v1->getStart() == s_i && v1->getEnd() == e_i){ 
-            // entire node so no extra childs needed
-            // decrement bandwidth
-            v1->setAMB(v1->getAMB() - w);
-            return 0; 
-        } 
-
+        cout << "   processing leaf" << endl;
         auto n_amb = (v1->getAMB() -w);
         auto amb = v1->getAMB();
 
+        if(v1->getStart() == s_i && v1->getEnd() == e_i){ 
+            cout << "complete leaf" << endl;
+            // entire node so no extra childs needed
+            // decrement bandwidth
+            v1->setAMB(n_amb);
+            return n_amb; 
+        } 
+
+       
+
         if(v1->getStart() == s_i && v1->getEnd() > e_i){
             // l
-            cout << "should be here" << endl;
+            cout << "right part" << endl;
             Node * C1 = new Node(0,s_i,e_i);
             C1->setAMB(n_amb);
             v1->setC1(C1);
@@ -169,10 +153,10 @@ int processLeaf(Node * v1,int w,int s_i,int e_i){
              // same bw
             // sub root
             v1->setAMB(n_amb);
-            return 0;
+            return n_amb;
         }
         if(v1->getStart() < s_i && v1->getEnd() == e_i){
-            cout << "not here" << endl;
+            cout << "left part" << endl;
             // l
             Node * C1 = new Node(0,v1->getStart(),s_i);
             v1->setC1(C1);
@@ -183,10 +167,10 @@ int processLeaf(Node * v1,int w,int s_i,int e_i){
             C3->setAMB(n_amb); // same bw
             // sub root
             v1->setAMB(n_amb); 
-            return 0;
+            return n_amb;
         }
-        cout << "not here" << endl;
         // split 3 child 
+        cout << "3 child" << endl;
         Node * C1 = new Node(0,v1->getStart(),s_i);
         Node * C2 = new Node(0,s_i,e_i);
         Node * C3 = new Node(0,e_i,v1->getEnd());
@@ -203,43 +187,84 @@ int processLeaf(Node * v1,int w,int s_i,int e_i){
        
         v1->setAMB(n_amb); 
         
-        return 0;
-        //------------------------
+        return n_amb;
 }
 
 int split(Node * v1,Node * v2,Node * v3,int count, int w, int s_i,int e_i){ // forse devo ritornare il valore di count
     int rv1 = v1->getEnd();
     int lv1 = v1->getStart();
     
+    count++;
+
     bool contained = (s_i <= v1->getStart() && v1->getStart() < e_i) ||
                          ((v1->getStart() <= s_i && s_i <=  v1->getEnd()) && (v1->getStart() <= e_i && e_i <=  v1->getEnd()) )
                          || (s_i < v1->getEnd() && v1->getEnd() <= e_i); // [c,d) int [l(u),r(u))
         
     if(!contained){
+        cout << "it: " << count << " not contained" << endl;
         return -1;
     }
     
-    bool is_leaf = (v1->getC1() == nullptr) && (v1->getC2() == nullptr) && (v1->getC3() == nullptr); // getChild().size()
-    
-    
+    bool is_leaf = v1->isLeaf();
+
+    if(v1->getStart() <= s_i && v1->getEnd() >= e_i && !is_leaf){
+        cout << "it: " << count << " contained egual" << endl;
+        //v1->setAMB(v1->getAMB() - w);
+        // IF THE NODE is contained by the req interval then simply decrement and return
+
+        //v1->setAMB(v1->getAMB() - w); // ERRORE, LA BANDA MINIMA ORA é LA BANDA MINIMA TRA I FIGLI COINVOLTI
+        if(v1->getStart() == s_i && v1->getEnd() == e_i){
+            cout << "it: " << count << " full node" << endl;
+            v1->setAMB(v1->getAMB() - w);
+            return (v1->getAMB() - w);
+        }
+        // ELSE call split into the childs of that node for the interested interval by the child
+        // FOR EACH OF THE CHILD 
+        // then return
+        auto childs = v1->getChilds();
+        int minBW = std::numeric_limits<int>::max();
+        int b; 
+        for(auto v:childs){
+            cout << "it: " << count << " entering child cycle" << endl;
+            if(v != nullptr){
+            auto n_s = max(s_i,v->getStart());
+            auto n_e = min(e_i,v->getEnd());
+            cout << "it: " << count << " n_s " << n_s << " n_e " << n_e << endl;
+            
+            if(n_s < n_e){ // means no interception between node interval and requested interval
+                b = split(v,nullptr,nullptr,count,w,n_s,n_e);
+                cout << "it: " << count << " child" << endl;
+                if(minBW > b){
+                    minBW = b;
+                }
+            }
+            }else{
+                cout << "it: "<< count << " nullptr child" << endl;
+            }
+            // SET bandwidth of this node as the new minimum among the child
+            // IF this.getAMB() > new minimum
+        }
+        cout << "it : " << count << " b " << b << "min BW " << minBW << endl;
+        if(v1->getAMB() > minBW){ // new minimum among the childs
+            cout << "it : " << count << " new minimum " << minBW << endl;
+            v1->setAMB(minBW);
+        }
+        return minBW; // counter = 
+    }
+     
     if(is_leaf){
         // process child
+        cout << "it: " << count << " on the leaf" << endl;
         return processLeaf(v1,w,s_i,e_i);
     }
-    // IT WAS BEFORE THE lEAF BUT I THINK THAT IS AN ERROR ! (tests are with me)
-    if(v1->getStart() >= s_i && v1->getEnd() >= e_i){
-        cout << "here ?" << endl;
-        v1->setAMB(v1->getAMB() - w);
-        return 1; // counter = 1 
-    }
-    cout << "Not implemented yet" << endl;
+    cout << "here" << endl;
     return 0;
 }
 
 Node * AllocateBW(Node * u,int w,int s_i,int e_i){
     int minBW;
     minBW = MinBW(u,s_i,e_i);
-
+    
     if(w > 0 && s_i > e_i){
         cout << "w <= 0 or s_i > e_i" << endl;
         return nullptr;
@@ -249,8 +274,10 @@ Node * AllocateBW(Node * u,int w,int s_i,int e_i){
         cout << "Not enough bandwidth available in " << s_i << "," << e_i << endl;
         return nullptr;
     };
+    cout << "entering split" << endl;
     auto a  = split(u,nullptr,nullptr,0,w,s_i,e_i);
-    cout << a << endl;
+    // CALL MERGE 
+    // BALANCE THE TREE
     return u;
 };
 
@@ -281,17 +308,14 @@ void printTree(Node * root){
 int main(int argc, char * argv[]){
     
     if(argc < 4){
-        cout << "Insert [Node,start,end]...exit" << endl;
+        cout << "Insert [w,start,end]...exit" << endl;
         exit(1);
     }
 
     
-    char * node = argv[1];
-    int s = atoi(argv[2]);
-    int e = atoi(argv[3]);
-
-
-    // TODO: matching char with the node
+    int w = atoi(argv[1]);
+    int c = atoi(argv[2]);
+    int d = atoi(argv[3]);
 
 
     Node A(5,0,60);
@@ -333,9 +357,11 @@ int main(int argc, char * argv[]){
     G.setAMB(amb(&G));
     H.setAMB(amb(&H));
     
-    Node * a = AllocateBW(&D,5,3,9);
+    Node * a = AllocateBW(&A,w,c,d);
     
     printTree(&A);
     
+    
+
     exit(0);
 };

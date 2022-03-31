@@ -1,8 +1,11 @@
 #include "Node.h"
 #include <iostream>
+#include <vector>
 
 Node::Node(){};
+
 Node::~Node(){};
+
 Node::Node(int b, int s, int e){
     band = b;
     start = s;
@@ -46,6 +49,7 @@ void Node::toString(){
     std::cout << "n childs : " << getNChild() << std::endl;
 
 };
+
 
 
 
