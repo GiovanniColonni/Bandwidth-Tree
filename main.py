@@ -109,6 +109,7 @@ def test_that(w,c,d):
         print("compilation errors..exit")
         exit(0)
 
+
     p = Popen(f"./bandwidth {w} {c} {d}",shell=True,stdout = PIPE)
     for line in p.stdout.readlines():
         print(line.decode("utf-8"))
@@ -123,6 +124,7 @@ if __name__ == "__main__":
 
     ret = test_that(w,c,d)
   
+    exit()
 
     if(ret == 0):
         printTree()

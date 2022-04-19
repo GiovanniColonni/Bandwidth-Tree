@@ -1,9 +1,15 @@
 #include <iostream>
-#include "./classes/Node.h"
 #include <vector>
 #include <cstdlib>
 #include <limits>
 #include <fstream>
+#include <map>
+#include <string>
+
+
+#include "./classes/Edge.h"
+#include "./classes/Graph.h"
+#include "./classes/Node.h"
 
 //#include "./classes/BandWidthTreeMethods.cpp"
 
@@ -34,7 +40,6 @@ int amb(Node *v){ // sum of band from v to root node
     amb_ = v->getBand() + amb_i;
     return amb_;
 };
-
 
 int MinBW(Node * n,int s_i,int e_i){ // find minimum bandwidth on the interval [s_i,e_i)
     
@@ -99,7 +104,23 @@ int MinBW(Node * n,int s_i,int e_i){ // find minimum bandwidth on the interval [
 
 };
 
-void merge(Node * n,int t){
+void merge(Node * n,int s_i, int e_i){
+    // if the node has some leaf then try to merge it 
+    // otherwise 
+    bool contained = (s_i <= n->getStart() && n->getStart() < e_i) ||
+                         ((n->getStart() <= s_i && s_i <=  n->getEnd()) && (n->getStart() <= e_i && e_i <=  n->getEnd()) )
+                         || (s_i < n->getEnd() && n->getEnd() <= e_i); // [c,d) int [l(u),r(u))
+    
+    if (!contained){
+        return;
+    }
+    auto childs = n->getChilds();
+    for (auto c: childs){
+        if(c != nullptr){
+            
+        }
+    }
+    
     return;
 }
 
@@ -295,6 +316,7 @@ void printNodes(ofstream &file,Node * n){
     }
     return;
 }
+
 void printTree(Node * root){
  // each line is a node + childs
  // node child1 child 2 child 3 in the form of pointers (since they are unique)
@@ -304,6 +326,45 @@ void printTree(Node * root){
  tree_file.close();
 
 };
+
+Graph * createGraph(){ // read the graph from file
+
+    // ASSUMPTIONS:
+    // 1. default bandwidth 10 kbit
+    // 2. initially you always have all the capacity
+    // 3. range time tra 0 e 60
+    Graph * g = new Graph(1,1);
+    ifstream topology("topology.txt");
+    string l;
+    while(topology){
+
+        vector<Edge *> * v = new vector<Edge *>();
+        getline(topology,l);
+        if(l != ""){
+            int * n = new int(stoi(&l[0]));
+            
+            for(auto i = 1; i < l.size(); i++){
+                if(l[i] != ' '){
+                   int * e_to = new int(stoi(&l[i]));
+                   Node * root = new Node(10,0,60); // sostituire con costanti
+                   Edge * e = new Edge(e_to,root);
+                        
+                   v->push_back(e);
+                        
+                }
+            }
+            // inserting node + edge list in the map
+            //cout << "1" << endl;
+            g->insertNode(n,v);
+            //cout << "2" << endl;
+            
+        }
+        l = "";
+    }
+
+    topology.close();
+    return g;
+}
 
 int main(int argc, char * argv[]){
     
@@ -357,11 +418,13 @@ int main(int argc, char * argv[]){
     G.setAMB(amb(&G));
     H.setAMB(amb(&H));
     
-    Node * a = AllocateBW(&A,w,c,d);
+    //Node * a = AllocateBW(&A,w,c,d);
     
-    printTree(&A);
-    
-    
-
+    //printTree(&A);
+    Graph * g = createGraph(); // PROVARE A PRINTARE MAPPA !!!!s
+    std::map<int *,std::vector<Edge*>*> * g_map = g->getGraph();
+    for( auto & [v,e] : *g_map){
+        cout << e->size() << endl;
+    };
     exit(0);
 };
