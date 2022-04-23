@@ -10,6 +10,7 @@ Node::Node(int b, int s, int e){
     band = b;
     start = s;
     end = e;
+    amb = b;
 };
 
 void Node::setBand(int b){

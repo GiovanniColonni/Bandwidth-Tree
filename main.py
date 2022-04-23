@@ -103,7 +103,7 @@ def printTree():
 
 def test_that(w,c,d):
     # compile
-    p = Popen("g++ main.cpp classes/Node.cpp -o bandwidth",shell=True,stdout=PIPE)
+    p = Popen("g++ main.cpp classes/Node.cpp classes/Graph.cpp  -o bandwidth",shell=True,stdout=PIPE)
     ret = p.wait()
     if(ret != 0):
         print("compilation errors..exit")

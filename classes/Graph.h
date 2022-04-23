@@ -1,5 +1,6 @@
 #ifndef GRAPH_H
 #define GRAPH_H
+
 #include <vector>
 #include <map>
 
@@ -10,7 +11,7 @@ class Graph{
     private:
         int n_nodes;
         int n_edges;
-        std::map<int *,std::vector<Edge*>*> * g;
+        std::map<int,std::vector<Edge*>*> * g;
     
     public:
         Graph();
@@ -18,19 +19,19 @@ class Graph{
         Graph(int nodes,int edges){
             n_nodes = nodes;
             n_edges = edges;
-            g = new std::map<int *,std::vector<Edge*>*>();
+            g = new std::map<int,std::vector<Edge*>*>();
         };
         
         ~Graph();
 
-        std::map<int *,std::vector<Edge *>*> * getGraph(){
-            return g;
+        std::map<int,std::vector<Edge *>*> * getGraph();
+
+        void insertNode(int node,std::vector<Edge *>* edges){
+            g->insert( std::pair<int,std::vector<Edge *>*>(node,edges) );
         }
-        void insertNode(int * node,std::vector<Edge *>* edges){
-            g->insert( std::pair<int *,std::vector<Edge *>*>(node,edges) );
-        }
-        std::vector<int> Feasibility(int b,int t1,int t2);
-};
+        std::vector<int> * Feasibility(int s,int e,int b,int source,int destination);
+        std::vector<int> * BFS(int source,int destination,std::map<int,std::vector<Edge*>*> * tmp_g);
+};  
 
 
 #endif // _

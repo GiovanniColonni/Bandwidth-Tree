@@ -4,11 +4,11 @@
 class Edge{
     private:
         Node * root;
-        int * node;
+        int node;
     
     public:
         Edge();
-         Edge(int * n, Node * r){
+         Edge(int  n, Node * r){
             node = n;
             root = r;
         };
@@ -22,7 +22,7 @@ class Edge{
             return root;
         }
 
-        int * getNode(){
+        int getNode(){
             return node;
         }
     
