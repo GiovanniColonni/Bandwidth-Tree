@@ -31,6 +31,7 @@ class Graph{
         }
         std::vector<int> * Feasibility(int s,int e,int b,int source,int destination);
         std::vector<int> * BFS(int source,int destination,std::map<int,std::vector<Edge*>*> * tmp_g);
+        int * findRoute(std::map<int,std::vector<Edge *> *> * g_tmp,int source,int destination);
 };  
 
 

@@ -1,6 +1,8 @@
 #ifndef Edge_H
 #define Edge_H
 #include "Node.h" // bandwidth tree
+
+
 class Edge{
     private:
         Node * root;
@@ -8,12 +10,12 @@ class Edge{
     
     public:
         Edge();
-         Edge(int  n, Node * r){
+        ~Edge();
+        Edge(int  n, Node * r){
             node = n;
             root = r;
         };
-        ~Edge();
-       
+        
 
         void setRoot(Node * r){
             root = r;
@@ -27,4 +29,5 @@ class Edge{
         }
     
 };
+
 #endif 

@@ -111,26 +111,14 @@ int main(int argc, char * argv[]){
     
     //Node * a = AllocateBW(&A,w,c,d);
     */
-
-    Graph * g = methods::createGraph();
     
-    vector<int> * a = g->Feasibility(0,60,9,1,3);
+    
+    Graph * e = methods::createGraph();
 
-    Edge * e[5][5];
-    e[0][0] = new Edge(1,nullptr);
-    cout << e[0][0]->getNode() << endl;
+    e->Feasibility(0,10,9,1,5);
+
     exit(0);
 
-    if(a != nullptr){
-        cout << "qualcosa c'è stampa il path" << endl;
-        
-        for(auto e: *a){
-                cout << e << " -> " << endl;
-        }
-        
-    }else{
-        cout << "no path" << endl;
-    }
     
     
     /*

@@ -1,15 +1,16 @@
 #ifndef BANDWIDTHTREEMETHODS
 #define  BANDWIDTHTREEMETHODS
 
-#include <iostream>
-#include "Node.h"
-#include <limits>
-#include <vector>
-#include "Graph.h"
-#include "Edge.h"
 #include <string>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
+#include <limits>
+#include <vector>
+//----------------
+#include "Node.h"
+#include "Graph.h"
+#include "Edge.h"
 
 namespace methods{
 
@@ -82,13 +83,20 @@ static Graph * createGraph(){ // read the graph from file
     // 1. default bandwidth 10 kbit
     // 2. initially you always have all the capacity
     // 3. range time tra 0 e 60
-    Graph * g = new Graph(1,1);
     std::ifstream topology("./topology.txt");
     std::string l;
     if(!topology.is_open()){
         std::cout << "can't open topology file..it exist?" << std::endl;
         return nullptr;
     }
+    
+    // number of nodes in the graph is in the first line of the file
+    getline(topology,l);
+    int n_nodes = std::stoi(&l[0]);
+    Graph * g = new Graph(n_nodes,1);
+    l = "";
+    std::cout << n_nodes << std::endl;
+
     while(topology){
 
         std::vector<Edge *> * v = new std::vector<Edge *>();
@@ -116,6 +124,47 @@ static Graph * createGraph(){ // read the graph from file
     topology.close();
     return g;
 }
+
+
+/*
+
+static Edge **   createGraphMatrix(){
+    std::ifstream topology("./topology.txt");
+    std::string l;
+    if(!topology.is_open()){
+        std::cout << "can't open topology file..it exist?" << std::endl;
+        return nullptr;
+    }
+    getline(topology,l);
+    auto nodes = std::stoi(&l[0]);
+    Edge ** graph = new Edge*[nodes];
+    while (topology)
+    {
+        getline(topology,l);
+        if(l != ""){
+            int n = std::stoi(&l[0]);
+            graph[n] = new Edge[nodes];
+            for(auto i = 1; i < l.size(); i++){
+                if(l[i] != ' '){
+                   int e_to = std::stoi(&l[i]);
+                   Node * root = new Node(10,0,60); // sostituire con costanti
+                   Edge * e = new Edge(e_to,root);
+                        
+                   graph[n][i] = *e;
+                }
+                //else{
+                 //   graph[n][i] = *new Edge();
+                //}
+                
+            }
+                       
+        }
+        l = "";
+    }
+    return graph;
+}
+*/
+
 
 static void merge(Node * n,int s_i, int e_i){
     // if the node has some leaf then try to merge it 
@@ -339,6 +388,11 @@ static void printTree(Node * root){
  tree_file.close();
 
 };
+
+static int MaxLinkDuration(Node * root,int ts,int w){
+    // trovare intervallo consecutivo più lungo
+}
+
 
 }; // END namespace
 #endif

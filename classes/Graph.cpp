@@ -3,6 +3,8 @@
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include <list>
+
 //----------------
 #include "Graph.h"
 #include "Edge.h"
@@ -58,6 +60,55 @@ vector<int> *  Graph::BFS(int source,int destination,map<int,vector<Edge*>*> * t
     return nullptr; // path not found
 }        
 
+
+int * Graph::findRoute(map<int,vector<Edge *> *> * g_tmp,int source,int destination){
+    
+
+    int n = Graph::n_nodes;  // metterlo con construttore
+    int * pred = new int[n];
+    int dist[n];
+
+    list<int> queue;
+    bool visited[n];
+
+    for (int i = 0; i < n;i++){
+        visited[i] = 0;
+        dist[i] = numeric_limits<int>::max();
+        pred[i] = -1;
+    }
+
+    visited[source] = true;
+    dist[source] = 0;
+    queue.push_back(source);
+
+    while (!queue.empty())
+    {
+        int u =  queue.front();
+        cout << "visiting " << u << endl;
+        queue.pop_front();
+        map<int,vector<Edge *> *>::iterator map_it;
+        map_it = g->find(u);
+        for (Edge * e: *map_it->second){
+            cout << "in " << u << " " << e->getNode() << endl; 
+            cout << "visited ? " << visited[e->getNode()] << endl;    
+
+            if(visited[e->getNode()] == false || visited[e->getNode()] == 127 ){
+                visited[e->getNode()] = true;
+                dist[e->getNode()] = dist[u] +1;
+                pred[e->getNode()] = u;
+                queue.push_back(e->getNode());
+
+                if(e->getNode() == destination){ // found
+                    return pred;
+                }
+            }
+        }
+    }
+    
+    
+    return nullptr;
+}
+
 vector<int> * Graph::Feasibility(int s,int e, int b,int source,int destination){
     // copy the graph and remove all the edge that can't be allocated
     // because they can't satisfy the request
@@ -88,17 +139,29 @@ vector<int> * Graph::Feasibility(int s,int e, int b,int source,int destination){
         v->clear();
     }
     
-    
+    cout << "starting DFS" << endl;
     // DFS ! 
     if(tmp_g->size() == 0){ // no path
-        cout << "no path can be found in the graph" << endl;
+        cout << "no path can be found in the graph, not enough resources" << endl;
         return nullptr;
     }
-    vector<int> * path = Graph::BFS(source,destination,tmp_g);
+    int * paths = Graph::findRoute(tmp_g,source,destination);
+    //vector<int> * path = Graph::BFS(source,destination,tmp_g);
+    int c = destination;
+    if(paths != nullptr){
+        cout << "path for " << source << " to " << destination << endl;
+        while(paths[c] != -1){
+        cout << paths[c] << endl;
+        c = paths[c];
+        }
+    }else{
+        cout << "no path" << endl;
+    }
+       
 
-
-    return path;
+    return nullptr;
 }
+
 
 /*
 We can specialize the DFS algorithm to find a path between two given vertices u and z. 
