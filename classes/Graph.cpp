@@ -8,7 +8,7 @@
 //----------------
 #include "Graph.h"
 #include "Edge.h"
-#include "Node.h"
+#include "Tree.h"
 #include "BandWidthTreeMethods.cpp"
 
 
@@ -41,16 +41,16 @@ vector<int> *  Graph::BFS(int source,int destination,map<int,vector<Edge*>*> * t
         map_it = tmp_g->find(source);
         for(Edge * e: *map_it->second){
 
-            if(e->getNode() == destination){
+            if(e->getTree() == destination){
                 // founded !
-                visited->push_back(e->getNode());
+                visited->push_back(e->getTree());
                 return visited;
             }
 
-            vector<int>::iterator founded = find(visited->begin(),visited->end(),e->getNode());
+            vector<int>::iterator founded = find(visited->begin(),visited->end(),e->getTree());
             if(founded == visited->end()){ // never visited
-                visited->push_back(e->getNode()); // insert in visited
-                traversal.push(e->getNode()); // next to check
+                visited->push_back(e->getTree()); // insert in visited
+                traversal.push(e->getTree()); // next to check
             }
 
         } 
@@ -89,16 +89,16 @@ int * Graph::findRoute(map<int,vector<Edge *> *> * g_tmp,int source,int destinat
         map<int,vector<Edge *> *>::iterator map_it;
         map_it = g->find(u);
         for (Edge * e: *map_it->second){
-            cout << "in " << u << " " << e->getNode() << endl; 
-            cout << "visited ? " << visited[e->getNode()] << endl;    
+            cout << "in " << u << " " << e->getTree() << endl; 
+            cout << "visited ? " << visited[e->getTree()] << endl;    
 
-            if(visited[e->getNode()] == false || visited[e->getNode()] == 127 ){
-                visited[e->getNode()] = true;
-                dist[e->getNode()] = dist[u] +1;
-                pred[e->getNode()] = u;
-                queue.push_back(e->getNode());
+            if(visited[e->getTree()] == false || visited[e->getTree()] == 127 ){
+                visited[e->getTree()] = true;
+                dist[e->getTree()] = dist[u] +1;
+                pred[e->getTree()] = u;
+                queue.push_back(e->getTree());
 
-                if(e->getNode() == destination){ // found
+                if(e->getTree() == destination){ // found
                     return pred;
                 }
             }
@@ -122,7 +122,7 @@ vector<int> * Graph::Feasibility(int s,int e, int b,int source,int destination){
         
         for(it=edges->begin();it != edges->end(); it++){
 
-            Node * t = (*it)->getRoot();
+            Tree * t = (*it)->getRoot();
 
             auto minbw = methods::MinBW(t,s,e);
             if(minbw >= b){ 

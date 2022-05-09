@@ -8,37 +8,32 @@
 #include <limits>
 #include <vector>
 //----------------
-#include "Node.h"
+#include "Tree.h"
 #include "Graph.h"
 #include "Edge.h"
 
 namespace methods{
 
-static int MinBW(Node * n,int s_i,int e_i){ // find minimum bandwidth on the interval [s_i,e_i)
+static int MinBW(Tree * n,int s_i,int e_i){ // find minimum bandwidth on the interval [s_i,e_i)
     
     if(s_i > e_i){
         std::cout << "s_i > e_i" << std::endl;
         return 0;
     }
-
-    //it++;
     
-    if(!(n->getStart() <= s_i) || !(n->getEnd() >= e_i)){ // GUARDARE DELL INTERVALLO NON COMPLETO [)
-        //cout << "Not contained" << endl;
+    if(!(n->getStart() <= s_i) || !(n->getEnd() >= e_i)){ 
         return 0;
     };
 
 
-    int minBW = std::numeric_limits<int>::max(); // not really infinite but 2^31-1
-    bool is_leaf = (n->getC1() == nullptr) && (n->getC2() == nullptr) && (n->getC3() == nullptr); // getChild().size()
+    int minBW = std::numeric_limits<int>::max(); 
+    bool is_leaf = (n->getC1() == nullptr) && (n->getC2() == nullptr) && (n->getC3() == nullptr);
     
-    if(((n->getStart() == s_i) && (n->getEnd() == e_i)) || is_leaf){ //  [)
-        //cout << "iteration " << it << " here leaf or complete, value : " << amb(n) <<  endl;
+    if(((n->getStart() == s_i) && (n->getEnd() == e_i)) || is_leaf){ 
         return n->getAMB();
     };
     
-    std::vector<Node *> v = {n->getC1(),n->getC2(),n->getC3()};
-    //cout << "iteration " << it << " looking into childs : " << endl;
+    std::vector<Tree *> v = {n->getC1(),n->getC2(),n->getC3()};
 
     for(auto & child : v)
     {
@@ -54,25 +49,15 @@ static int MinBW(Node * n,int s_i,int e_i){ // find minimum bandwidth on the int
             int s = std::max(child->getStart(),s_i);
             int e = std::min(child->getEnd(),e_i);
 
-            //cout << "iteration " << it <<" s,e = " << s << "," << e << endl;
-
             int value = MinBW(child,s,e);
 
-            //cout << "iteration " << it << " value : " << value << " for " << child->getStart() << "," << child->getEnd() << endl;
-
-
             if(minBW > value){
-                //cout << "iteration " << it << " new minBW " << value << " old one " << minBW << endl;
                 minBW = value;
             }
-        } else{
-
-                //cout << "iteration " << it << " not contained : " << child->getStart() << "," << child->getEnd() << endl;
-            }
         }
+    }
        
     }
-    //cout << "iteration " << it << " final minBW " << minBW  <<  endl;
     return minBW;
 
 };
@@ -107,7 +92,7 @@ static Graph * createGraph(){ // read the graph from file
             for(auto i = 1; i < l.size(); i++){
                 if(l[i] != ' '){
                    int e_to = std::stoi(&l[i]);
-                   Node * root = new Node(10,0,60); // sostituire con costanti
+                   Tree * root = new Tree(10,0,60); // sostituire con costanti
                    Edge * e = new Edge(e_to,root);
                    v->push_back(e);
                         
@@ -115,7 +100,7 @@ static Graph * createGraph(){ // read the graph from file
             }
             // inserting node + edge list in the map
             //cout << "1" << endl;
-            g->insertNode(n,v);
+            g->insertTree(n,v);
             //cout << "2" << endl;
             
         }
@@ -126,47 +111,7 @@ static Graph * createGraph(){ // read the graph from file
 }
 
 
-/*
-
-static Edge **   createGraphMatrix(){
-    std::ifstream topology("./topology.txt");
-    std::string l;
-    if(!topology.is_open()){
-        std::cout << "can't open topology file..it exist?" << std::endl;
-        return nullptr;
-    }
-    getline(topology,l);
-    auto nodes = std::stoi(&l[0]);
-    Edge ** graph = new Edge*[nodes];
-    while (topology)
-    {
-        getline(topology,l);
-        if(l != ""){
-            int n = std::stoi(&l[0]);
-            graph[n] = new Edge[nodes];
-            for(auto i = 1; i < l.size(); i++){
-                if(l[i] != ' '){
-                   int e_to = std::stoi(&l[i]);
-                   Node * root = new Node(10,0,60); // sostituire con costanti
-                   Edge * e = new Edge(e_to,root);
-                        
-                   graph[n][i] = *e;
-                }
-                //else{
-                 //   graph[n][i] = *new Edge();
-                //}
-                
-            }
-                       
-        }
-        l = "";
-    }
-    return graph;
-}
-*/
-
-
-static void merge(Node * n,int s_i, int e_i){
+static void merge(Tree * n,int s_i, int e_i){
     // if the node has some leaf then try to merge it 
     // otherwise 
     bool contained = (s_i <= n->getStart() && n->getStart() < e_i) ||
@@ -186,11 +131,11 @@ static void merge(Node * n,int s_i, int e_i){
     return;
 }
 
-static void balance(Node * n){
+static void balance(Tree * n){
     return;
 }
 
-static void decrement_bandwidth(Node * n,int w,int c,int d){
+static void decrement_bandwidth(Tree * n,int w,int c,int d){
 
     if(n->getStart() == c && n->getEnd() == d){ // entire interval
         n->setAMB(n->getAMB() - w);
@@ -207,7 +152,7 @@ static void decrement_bandwidth(Node * n,int w,int c,int d){
 
 }
 
-static int processLeaf(Node * v1,int w,int s_i,int e_i){
+static int processLeaf(Tree * v1,int w,int s_i,int e_i){
         std::cout << "   processing leaf" << std::endl;
         auto n_amb = (v1->getAMB() -w);
         auto amb = v1->getAMB();
@@ -225,12 +170,12 @@ static int processLeaf(Node * v1,int w,int s_i,int e_i){
         if(v1->getStart() == s_i && v1->getEnd() > e_i){
             // l
             std::cout << "right part" << std::endl;
-            Node * C1 = new Node(0,s_i,e_i);
+            Tree * C1 = new Tree(0,s_i,e_i);
             C1->setAMB(n_amb);
             v1->setC1(C1);
             
             // r
-            Node * C3 = new Node(0,e_i,v1->getEnd());
+            Tree * C3 = new Tree(0,e_i,v1->getEnd());
             C3->setAMB(amb);
             v1->setC3(C3);
              // same bw
@@ -241,11 +186,11 @@ static int processLeaf(Node * v1,int w,int s_i,int e_i){
         if(v1->getStart() < s_i && v1->getEnd() == e_i){
             std::cout << "left part" << std::endl;
             // l
-            Node * C1 = new Node(0,v1->getStart(),s_i);
+            Tree * C1 = new Tree(0,v1->getStart(),s_i);
             v1->setC1(C1);
             C1->setAMB(amb);
             // r
-            Node * C3 = new Node(0,s_i,v1->getEnd());
+            Tree * C3 = new Tree(0,s_i,v1->getEnd());
             v1->setC3(C3);
             C3->setAMB(n_amb); // same bw
             // sub root
@@ -254,9 +199,9 @@ static int processLeaf(Node * v1,int w,int s_i,int e_i){
         }
         // split 3 child 
         std::cout << "3 child" << std::endl;
-        Node * C1 = new Node(0,v1->getStart(),s_i);
-        Node * C2 = new Node(0,s_i,e_i);
-        Node * C3 = new Node(0,e_i,v1->getEnd());
+        Tree * C1 = new Tree(0,v1->getStart(),s_i);
+        Tree * C2 = new Tree(0,s_i,e_i);
+        Tree * C3 = new Tree(0,e_i,v1->getEnd());
 
 
         C1->setAMB(amb);
@@ -273,7 +218,7 @@ static int processLeaf(Node * v1,int w,int s_i,int e_i){
         return n_amb;
 }
 
-static int split(Node * v1,Node * v2,Node * v3,int count, int w, int s_i,int e_i){ // forse devo ritornare il valore di count
+static int split(Tree * v1,Tree * v2,Tree * v3,int count, int w, int s_i,int e_i){ // forse devo ritornare il valore di count
     int rv1 = v1->getEnd();
     int lv1 = v1->getStart();
     
@@ -344,7 +289,7 @@ static int split(Node * v1,Node * v2,Node * v3,int count, int w, int s_i,int e_i
     return 0;
 }
 
-static Node * AllocateBW(Node * u,int w,int s_i,int e_i){
+static Tree * AllocateBW(Tree * u,int w,int s_i,int e_i){
     int minBW;
     minBW = methods::MinBW(u,s_i,e_i);
     
@@ -364,32 +309,33 @@ static Node * AllocateBW(Node * u,int w,int s_i,int e_i){
     return u;
 };
 
-static void printNodes(std::ofstream &file,Node * n){
+static void printTrees(std::ofstream &file,Tree * n){
     
     file << "(" << n << ";" << n->getStart() << ";" << n->getEnd() << ";"<< n->getAMB() <<")," << n->getC1() << "," << n->getC2() << "," << n->getC3() << std::endl;
+    std::cout << "here ??" << std::endl;
     if(n->getC1() != nullptr){
-        printNodes(file,n->getC1());
+        printTrees(file,n->getC1());
     }
     if(n->getC2() != nullptr){
-        printNodes(file,n->getC2());
+        printTrees(file,n->getC2());
     }
     if(n->getC3() != nullptr){
-        printNodes(file,n->getC3());
+        printTrees(file,n->getC3());
     }
     return;
 }
 
-static void printTree(Node * root){
+static void printTree(Tree * root){
  // each line is a node + childs
  // node child1 child 2 child 3 in the form of pointers (since they are unique)
  std::ofstream tree_file ("../tree.txt");
- printNodes(tree_file,root);
+ printTrees(tree_file,root);
  
  tree_file.close();
 
 };
 
-static int MaxLinkDuration(Node * root,int ts,int w){
+static int MaxLinkDuration(Tree * root,int ts,int w){
     // trovare intervallo consecutivo più lungo
 }
 

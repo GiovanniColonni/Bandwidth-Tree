@@ -9,7 +9,7 @@
 
 #include "./classes/Edge.h"
 #include "./classes/Graph.h"
-#include "./classes/Node.h"
+#include "./classes/Tree.h"
 
 #include "./classes/BandWidthTreeMethods.cpp"
 
@@ -25,7 +25,7 @@ using namespace std;
         // H = (20K,[50,60])
 
 
-int amb(Node *v){ // sum of band from v to root node
+int amb(Tree *v){ // sum of band from v to root node
     // SBAGLIATO NON DEVO TORNARE AL ROOT MA AL NODO IN CUI INIZIALMENTE è STATA CHIAMATA LA FUNZIONE
     int amb_;
     int amb_i;
@@ -55,7 +55,31 @@ ToDo:
 */
 
 
+void printTrees(std::ofstream &file,Tree * n){
+    
+    file << "(" << n << ";" << n->getStart() << ";" << n->getEnd() << ";"<< n->getAMB() <<")," << n->getC1() << "," << n->getC2() << "," << n->getC3() << std::endl;
+    std::cout << "here ??" << std::endl;
+    if(n->getC1() != nullptr){
+        printTrees(file,n->getC1());
+    }
+    if(n->getC2() != nullptr){
+        printTrees(file,n->getC2());
+    }
+    if(n->getC3() != nullptr){
+        printTrees(file,n->getC3());
+    }
+    return;
+}
 
+void printTree(Tree * root){
+ // each line is a node + childs
+ // node child1 child 2 child 3 in the form of pointers (since they are unique)
+ std::ofstream tree_file ("tree.txt");
+ printTrees(tree_file,root);
+ 
+ tree_file.close();
+
+};
 
 int main(int argc, char * argv[]){
     
@@ -69,15 +93,15 @@ int main(int argc, char * argv[]){
     int c = atoi(argv[2]);
     int d = atoi(argv[3]);
 
-    /*
-    Node A(5,0,60);
-    Node B(10,0,30);
-    Node C(0,30,60);
-    Node D(5,0,10);
-    Node E(0,10,20);
-    Node F(10,20,30);
-    Node G(0,30,50);
-    Node H(20,50,60);
+    
+    Tree A(5,0,60);
+    Tree B(10,0,30);
+    Tree C(0,30,60);
+    Tree D(5,0,10);
+    Tree E(0,10,20);
+    Tree F(10,20,30);
+    Tree G(0,30,50);
+    Tree H(20,50,60);
 
     A.setC1(&B);
     A.setC3(&C);
@@ -109,13 +133,14 @@ int main(int argc, char * argv[]){
     G.setAMB(amb(&G));
     H.setAMB(amb(&H));
     
-    //Node * a = AllocateBW(&A,w,c,d);
-    */
-    
-    
-    Graph * e = methods::createGraph();
+    //Tree * a = AllocateBW(&A,w,c,d);
 
-    e->Feasibility(0,10,9,1,5);
+    printTree(&A);
+    
+    
+    //Graph * e = methods::createGraph();
+
+    //e->Feasibility(0,10,9,1,5);
 
     exit(0);
 

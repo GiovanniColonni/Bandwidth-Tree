@@ -26,7 +26,7 @@ class Graph{
 
         std::map<int,std::vector<Edge *>*> * getGraph();
 
-        void insertNode(int node,std::vector<Edge *>* edges){
+        void insertTree(int node,std::vector<Edge *>* edges){
             g->insert( std::pair<int,std::vector<Edge *>*>(node,edges) );
         }
         std::vector<int> * Feasibility(int s,int e,int b,int source,int destination);

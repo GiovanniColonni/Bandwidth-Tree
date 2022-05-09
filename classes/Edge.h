@@ -1,30 +1,30 @@
 #ifndef Edge_H
 #define Edge_H
-#include "Node.h" // bandwidth tree
+#include "Tree.h" // bandwidth tree
 
 
 class Edge{
     private:
-        Node * root;
+        Tree * root;
         int node;
     
     public:
         Edge();
         ~Edge();
-        Edge(int  n, Node * r){
+        Edge(int  n, Tree * r){
             node = n;
             root = r;
         };
         
 
-        void setRoot(Node * r){
+        void setRoot(Tree * r){
             root = r;
         }
-        Node * getRoot(){
+        Tree * getRoot(){
             return root;
         }
 
-        int getNode(){
+        int getTree(){
             return node;
         }
     

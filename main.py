@@ -103,14 +103,14 @@ def printTree():
 
 def test_that(w,c,d):
     # compile
-    p = Popen("g++ main.cpp classes/Node.cpp classes/Graph.cpp classes/Edge.cpp -o bandwidth",shell=True,stdout=PIPE)
+    p = Popen("g++ main.cpp classes/Tree.cpp classes/Graph.cpp classes/Edge.cpp -o bandwidth",shell=True,stdout=PIPE)
     ret = p.wait()
     if(ret != 0):
         print("compilation errors..exit")
         exit(0)
 
     
-    p = Popen(f"./bandwidth {w} {c} {d}",shell=True,stdout = PIPE)
+    p = Popen(["./bandwidth",w,c,d],stdout = PIPE)
     
     for line in p.stdout.readlines():
         print(line.decode("utf-8"))
@@ -125,7 +125,6 @@ if __name__ == "__main__":
 
     ret = test_that(w,c,d)
   
-    exit()
 
     if(ret == 0):
         printTree()
