@@ -12,6 +12,7 @@
 #include "./classes/Tree.h"
 
 #include "./classes/BandWidthTreeMethods.cpp"
+#include "./classes/Test.cpp"
 
 using namespace std;
     // example from the paper 
@@ -25,21 +26,7 @@ using namespace std;
         // H = (20K,[50,60])
 
 
-int amb(Tree *v){ // sum of band from v to root node
-    // SBAGLIATO NON DEVO TORNARE AL ROOT MA AL NODO IN CUI INIZIALMENTE è STATA CHIAMATA LA FUNZIONE
-    int amb_;
-    int amb_i;
 
-    
-    if(v->getP() == nullptr){
-        return v->getBand();    
-    };
-    
-    amb_i = amb(v->getP());
-
-    amb_ = v->getBand() + amb_i;
-    return amb_;
-};
 
 
 /*
@@ -54,7 +41,7 @@ ToDo:
 8. davvero anche int come puntatore ?
 */
 
-
+/*
 void printTrees(std::ofstream &file,Tree * n){
     
     file << "(" << n << ";" << n->getStart() << ";" << n->getEnd() << ";"<< n->getAMB() <<")," << n->getC1() << "," << n->getC2() << "," << n->getC3() << std::endl;
@@ -80,6 +67,7 @@ void printTree(Tree * root){
  tree_file.close();
 
 };
+*/
 
 int main(int argc, char * argv[]){
     
@@ -93,6 +81,10 @@ int main(int argc, char * argv[]){
     int c = atoi(argv[2]);
     int d = atoi(argv[3]);
 
+    auto n_iteration = 20;
+    //test::testMinBW(n_iteration);
+    test::allocateNewBandiwdthTreeRandom(n_iteration);
+    exit(0);
     
     Tree A(5,0,60);
     Tree B(10,0,30);
@@ -124,18 +116,18 @@ int main(int argc, char * argv[]){
     H.setP(&C);
 
     // set aggreagate minimum bandwidth on the tree nodes
-    A.setAMB(amb(&A));
-    B.setAMB(amb(&B));
-    C.setAMB(amb(&C));
-    D.setAMB(amb(&D));
-    E.setAMB(amb(&E));
-    F.setAMB(amb(&F));
-    G.setAMB(amb(&G));
-    H.setAMB(amb(&H));
+    A.setAMB(methods::amb(&A));
+    B.setAMB(methods::amb(&B));
+    C.setAMB(methods::amb(&C));
+    D.setAMB(methods::amb(&D));
+    E.setAMB(methods::amb(&E));
+    F.setAMB(methods::amb(&F));
+    G.setAMB(methods::amb(&G));
+    H.setAMB(methods::amb(&H));
     
-    //Tree * a = AllocateBW(&A,w,c,d);
+    Tree * a = methods::AllocateBW(&A,w,c,d);
 
-    printTree(&A);
+    methods::printTree(&A);
     
     
     //Graph * e = methods::createGraph();
@@ -145,13 +137,11 @@ int main(int argc, char * argv[]){
     exit(0);
 
     
-    
     /*
     for(auto &e:*a){
         cout << e << endl;
     }
     */
-
     //printTree(&A);
     /*
     Graph * g = createGraph(); // PROVARE A PRINTARE MAPPA !!!!s
@@ -161,4 +151,6 @@ int main(int argc, char * argv[]){
     };
     exit(0);
     */
+
+
 };

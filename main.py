@@ -68,6 +68,9 @@ def hierarchy_pos(G, root=None, width=3., vert_gap = 0.3, vert_loc = 0, xcenter 
 
             
     return _hierarchy_pos(G, root, width, vert_gap, vert_loc, xcenter)
+
+
+
 def printTree():
     tree_r = list()
     
@@ -75,7 +78,9 @@ def printTree():
         tree_r = f.readlines()
     # ToDo ! create nodes + labels
     nodes = list()
-    
+    if(tree_r == ""):
+        print("Empty file")
+        return -1
     root = tree_r[0].split(",")[0].split(";")[0][1:]
     labeldict = {}
     for r in tree_r:
@@ -125,9 +130,10 @@ if __name__ == "__main__":
 
     ret = test_that(w,c,d)
   
-
+    printTree()
     if(ret == 0):
         printTree()
+        pass
     else:
         print("Errors occurs")
     exit(0)

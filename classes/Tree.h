@@ -1,5 +1,5 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef TREE_H
+#define TREE_H
 #include <vector>
 
 class Tree{

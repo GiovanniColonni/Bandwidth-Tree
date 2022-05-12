@@ -1,5 +1,5 @@
-#ifndef BANDWIDTHTREEMETHODS
-#define  BANDWIDTHTREEMETHODS
+#ifndef BTM
+#define BTM
 
 #include <string>
 #include <cstdlib>
@@ -12,9 +12,28 @@
 #include "Graph.h"
 #include "Edge.h"
 
+using namespace std;
+
 namespace methods{
 
-static int MinBW(Tree * n,int s_i,int e_i){ // find minimum bandwidth on the interval [s_i,e_i)
+inline int amb(Tree *v){ // sum of band from v to root node
+    
+    int amb_;
+    int amb_i;
+
+    
+    if(v->getP() == nullptr){
+        return v->getBand();    
+    };
+    
+    amb_i = methods::amb(v->getP());
+
+    amb_ = v->getBand() + amb_i;
+    return amb_;
+};
+
+
+inline int MinBW(Tree * n,int s_i,int e_i){ // find minimum bandwidth on the interval [s_i,e_i)
     
     if(s_i > e_i){
         std::cout << "s_i > e_i" << std::endl;
@@ -62,7 +81,7 @@ static int MinBW(Tree * n,int s_i,int e_i){ // find minimum bandwidth on the int
 
 };
 
-static Graph * createGraph(){ // read the graph from file
+inline Graph * createGraph(){ // read the graph from file
 
     // ASSUMPTIONS:
     // 1. default bandwidth 10 kbit
@@ -110,8 +129,7 @@ static Graph * createGraph(){ // read the graph from file
     return g;
 }
 
-
-static void merge(Tree * n,int s_i, int e_i){
+inline void merge(Tree * n,int s_i, int e_i){
     // if the node has some leaf then try to merge it 
     // otherwise 
     bool contained = (s_i <= n->getStart() && n->getStart() < e_i) ||
@@ -131,11 +149,11 @@ static void merge(Tree * n,int s_i, int e_i){
     return;
 }
 
-static void balance(Tree * n){
+inline void balance(Tree * n){
     return;
 }
 
-static void decrement_bandwidth(Tree * n,int w,int c,int d){
+inline void decrement_bandwidth(Tree * n,int w,int c,int d){
 
     if(n->getStart() == c && n->getEnd() == d){ // entire interval
         n->setAMB(n->getAMB() - w);
@@ -152,13 +170,13 @@ static void decrement_bandwidth(Tree * n,int w,int c,int d){
 
 }
 
-static int processLeaf(Tree * v1,int w,int s_i,int e_i){
-        std::cout << "   processing leaf" << std::endl;
+inline int processLeaf(Tree * v1,int w,int s_i,int e_i){
+        //std::cout << "   processing leaf" << std::endl;
         auto n_amb = (v1->getAMB() -w);
         auto amb = v1->getAMB();
 
         if(v1->getStart() == s_i && v1->getEnd() == e_i){ 
-            std::cout << "complete leaf" << std::endl;
+            //std::cout << "complete leaf" << std::endl;
             // entire node so no extra childs needed
             // decrement bandwidth
             v1->setAMB(n_amb);
@@ -169,7 +187,7 @@ static int processLeaf(Tree * v1,int w,int s_i,int e_i){
 
         if(v1->getStart() == s_i && v1->getEnd() > e_i){
             // l
-            std::cout << "right part" << std::endl;
+            //std::cout << "right part" << std::endl;
             Tree * C1 = new Tree(0,s_i,e_i);
             C1->setAMB(n_amb);
             v1->setC1(C1);
@@ -184,7 +202,7 @@ static int processLeaf(Tree * v1,int w,int s_i,int e_i){
             return n_amb;
         }
         if(v1->getStart() < s_i && v1->getEnd() == e_i){
-            std::cout << "left part" << std::endl;
+            //std::cout << "left part" << std::endl;
             // l
             Tree * C1 = new Tree(0,v1->getStart(),s_i);
             v1->setC1(C1);
@@ -198,7 +216,7 @@ static int processLeaf(Tree * v1,int w,int s_i,int e_i){
             return n_amb;
         }
         // split 3 child 
-        std::cout << "3 child" << std::endl;
+        //std::cout << "3 child" << std::endl;
         Tree * C1 = new Tree(0,v1->getStart(),s_i);
         Tree * C2 = new Tree(0,s_i,e_i);
         Tree * C3 = new Tree(0,e_i,v1->getEnd());
@@ -218,7 +236,7 @@ static int processLeaf(Tree * v1,int w,int s_i,int e_i){
         return n_amb;
 }
 
-static int split(Tree * v1,Tree * v2,Tree * v3,int count, int w, int s_i,int e_i){ // forse devo ritornare il valore di count
+inline int split(Tree * v1,Tree * v2,Tree * v3,int count, int w, int s_i,int e_i){ // forse devo ritornare il valore di count
     int rv1 = v1->getEnd();
     int lv1 = v1->getStart();
     
@@ -229,18 +247,16 @@ static int split(Tree * v1,Tree * v2,Tree * v3,int count, int w, int s_i,int e_i
                          || (s_i < v1->getEnd() && v1->getEnd() <= e_i); // [c,d) int [l(u),r(u))
         
     if(!contained){
-        std::cout << "it: " << count << " not contained" << std::endl;
+        //std::cout << "it: " << count << " not contained" << std::endl;
         return -1;
     }
     
     bool is_leaf = v1->isLeaf();
 
     if(v1->getStart() <= s_i && v1->getEnd() >= e_i && !is_leaf){
-        std::cout << "it: " << count << " contained egual" << std::endl;
-        //v1->setAMB(v1->getAMB() - w);
+        
         // IF THE NODE is contained by the req interval then simply decrement and return
 
-        //v1->setAMB(v1->getAMB() - w); // ERRORE, LA BANDA MINIMA ORA é LA BANDA MINIMA TRA I FIGLI COINVOLTI
         if(v1->getStart() == s_i && v1->getEnd() == e_i){
             std::cout << "it: " << count << " full node" << std::endl;
             v1->setAMB(v1->getAMB() - w);
@@ -253,28 +269,28 @@ static int split(Tree * v1,Tree * v2,Tree * v3,int count, int w, int s_i,int e_i
         int minBW = std::numeric_limits<int>::max();
         int b; 
         for(auto v:childs){
-            std::cout << "it: " << count << " entering child cycle" << std::endl;
+            //std::cout << "it: " << count << " entering child cycle" << std::endl;
             if(v != nullptr){
             auto n_s = std::max(s_i,v->getStart());
             auto n_e = std::min(e_i,v->getEnd());
-            std::cout << "it: " << count << " n_s " << n_s << " n_e " << n_e << std::endl;
+            //std::cout << "it: " << count << " n_s " << n_s << " n_e " << n_e << std::endl;
             
             if(n_s < n_e){ // means no interception between node interval and requested interval
                 b = split(v,nullptr,nullptr,count,w,n_s,n_e);
-                std::cout << "it: " << count << " child" << std::endl;
+                //std::cout << "it: " << count << " child" << std::endl;
                 if(minBW > b){
                     minBW = b;
                 }
             }
             }else{
-                std::cout << "it: "<< count << " nullptr child" << std::endl;
+                //std::cout << "it: "<< count << " nullptr child" << std::endl;
             }
             // SET bandwidth of this node as the new minimum among the child
             // IF this.getAMB() > new minimum
         }
-        std::cout << "it : " << count << " b " << b << "min BW " << minBW << std::endl;
+        //std::cout << "it : " << count << " b " << b << "min BW " << minBW << std::endl;
         if(v1->getAMB() > minBW){ // new minimum among the childs
-            std::cout << "it : " << count << " new minimum " << minBW << std::endl;
+            //std::cout << "it : " << count << " new minimum " << minBW << std::endl;
             v1->setAMB(minBW);
         }
         return minBW; // counter = 
@@ -282,14 +298,14 @@ static int split(Tree * v1,Tree * v2,Tree * v3,int count, int w, int s_i,int e_i
      
     if(is_leaf){
         // process child
-        std::cout << "it: " << count << " on the leaf" << std::endl;
+        //std::cout << "it: " << count << " on the leaf" << std::endl;
         return processLeaf(v1,w,s_i,e_i);
     }
-    std::cout << "here" << std::endl;
+    //std::cout << "here" << std::endl;
     return 0;
 }
 
-static Tree * AllocateBW(Tree * u,int w,int s_i,int e_i){
+inline Tree * AllocateBW(Tree * u,int w,int s_i,int e_i){
     int minBW;
     minBW = methods::MinBW(u,s_i,e_i);
     
@@ -302,17 +318,16 @@ static Tree * AllocateBW(Tree * u,int w,int s_i,int e_i){
         std::cout << "Not enough bandwidth available in " << s_i << "," << e_i << std::endl;
         return nullptr;
     };
-    std::cout << "entering split" << std::endl;
+    //std::cout << "entering split" << std::endl;
     auto a  = split(u,nullptr,nullptr,0,w,s_i,e_i);
-    // CALL MERGE 
-    // BALANCE THE TREE
+    
     return u;
 };
 
-static void printTrees(std::ofstream &file,Tree * n){
+inline void printTrees(std::ofstream &file,Tree * n){
     
     file << "(" << n << ";" << n->getStart() << ";" << n->getEnd() << ";"<< n->getAMB() <<")," << n->getC1() << "," << n->getC2() << "," << n->getC3() << std::endl;
-    std::cout << "here ??" << std::endl;
+    
     if(n->getC1() != nullptr){
         printTrees(file,n->getC1());
     }
@@ -325,18 +340,23 @@ static void printTrees(std::ofstream &file,Tree * n){
     return;
 }
 
-static void printTree(Tree * root){
+inline void printTree(Tree * root){
  // each line is a node + childs
  // node child1 child 2 child 3 in the form of pointers (since they are unique)
- std::ofstream tree_file ("../tree.txt");
- printTrees(tree_file,root);
+ std::ofstream tree_file ("tree.txt");
+ if (tree_file.is_open()){
+     printTrees(tree_file,root);
+ }else{
+     std::cout << "file not opened" << std::endl;
+ }
  
  tree_file.close();
 
 };
 
-static int MaxLinkDuration(Tree * root,int ts,int w){
+inline int MaxLinkDuration(Tree * root,int ts,int w){
     // trovare intervallo consecutivo più lungo
+    return 0;
 }
 
 
