@@ -11,15 +11,13 @@
 class Graph{
     private:
         int n_nodes;
-        int n_edges;
         std::map<int,std::vector<Edge*>*> * g;
     
     public:
         Graph();
         
-        Graph(int nodes,int edges){
+        Graph(int nodes){
             n_nodes = nodes;
-            n_edges = edges;
             g = new std::map<int,std::vector<Edge*>*>();
         };
         

@@ -34,9 +34,9 @@ namespace test{
             rand_e = (rand() % (100 - rand_s + 1)) + rand_s;
             cout << rand_b << " , " << rand_s << " , " << rand_e << endl;
             new_root = methods::AllocateBW(new_root,rand_b,rand_s,rand_e);
-            
+            cout << "it : " << i << endl;
         }
-
+    cout << "HERE !" ;
         methods::printTree(new_root);
         
     }

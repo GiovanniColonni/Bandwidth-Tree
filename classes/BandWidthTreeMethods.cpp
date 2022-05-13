@@ -97,7 +97,7 @@ inline Graph * createGraph(){ // read the graph from file
     // number of nodes in the graph is in the first line of the file
     getline(topology,l);
     int n_nodes = std::stoi(&l[0]);
-    Graph * g = new Graph(n_nodes,1);
+    Graph * g = new Graph(n_nodes);
     l = "";
     std::cout << n_nodes << std::endl;
 
@@ -345,6 +345,7 @@ inline void printTree(Tree * root){
  // node child1 child 2 child 3 in the form of pointers (since they are unique)
  std::ofstream tree_file ("tree.txt");
  if (tree_file.is_open()){
+     std::cout << "HERE !!!!!!" ;
      printTrees(tree_file,root);
  }else{
      std::cout << "file not opened" << std::endl;

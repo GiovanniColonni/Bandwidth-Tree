@@ -81,11 +81,12 @@ int main(int argc, char * argv[]){
     int c = atoi(argv[2]);
     int d = atoi(argv[3]);
 
-    auto n_iteration = 20;
+    auto n_iteration = 1;
     //test::testMinBW(n_iteration);
     test::allocateNewBandiwdthTreeRandom(n_iteration);
-    exit(0);
     
+    exit(0);
+    /*
     Tree A(5,0,60);
     Tree B(10,0,30);
     Tree C(0,30,60);
@@ -136,7 +137,7 @@ int main(int argc, char * argv[]){
 
     exit(0);
 
-    
+    */
     /*
     for(auto &e:*a){
         cout << e << endl;

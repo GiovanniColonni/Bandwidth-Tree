@@ -24,7 +24,7 @@ class Edge{
             return root;
         }
 
-        int getTree(){
+        int getNode(){
             return node;
         }
     
