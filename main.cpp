@@ -34,11 +34,6 @@ ToDo:
 1. togliere metodi non utilizzati
 2. mettere costanti
 3. riordinare dipendenze
-4. togliere le implementazioni da .h su tutti
-5. cambiare nome da node.h a tree_node.h o simile
-6. usare make/cmake
-7. togliere static dalle funzioni sennò è spreco
-8. davvero anche int come puntatore ?
 */
 
 /*
@@ -83,8 +78,8 @@ int main(int argc, char * argv[]){
 
     auto n_iteration = 1;
     //test::testMinBW(n_iteration);
-    test::allocateNewBandiwdthTreeRandom(n_iteration);
-    
+    //test::allocateNewBandiwdthTreeRandom(n_iteration);
+    test::testFeasibility();
     exit(0);
     /*
     Tree A(5,0,60);

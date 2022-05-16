@@ -123,7 +123,23 @@ def test_that(w,c,d):
     ret = p.wait()
     return ret
 
+def topology_print():
+    with open("topology.txt","r") as f:
+        lines = f.readlines()
+
+    lines = lines[1:]
+    g = nx.Graph()
+    for l in lines:
+        e_ = l.strip().split(" ")
+        n_ = e_[0]
+        list_edge = [(n_,edge) for edge in e_[1:]]
+        g.add_edges_from(list_edge)
+    
+    nx.draw(g,with_labels=True)
+    plt.savefig("Topology1.png")
 if __name__ == "__main__":
+    topology_print()
+    exit()
     w = argv[1]
     c = argv[2]
     d = argv[3]

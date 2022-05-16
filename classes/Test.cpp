@@ -5,6 +5,8 @@
 #include "BandWidthTreeMethods.cpp"
 #include "Tree.h"
 #include <math.h>
+#include "Graph.h"
+#include <vector>
 
 using namespace std;
 using std::chrono::duration_cast;
@@ -99,5 +101,11 @@ namespace test{
     }
 
     }
+
+    inline void testFeasibility(){
+        Graph * g = methods::createGraph();
+        vector<int> * v = g->Feasibility(0,10,9,1,5);
+    };
+
 };
 #endif
